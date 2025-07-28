@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { generateQuizBatch } from './services/geminiService';
 import { QuizData } from './types';
@@ -191,7 +189,7 @@ const App: React.FC = () => {
               <div className="screen">
                   {gamePhase === 'start' ? (
                       <div className="screen-content" style={{ height: '100%', overflow: 'auto', width: '100%' }}>
-                        <StartScreen onStart={handleStartGame} />
+                        <StartScreen onStart={handleStartGame} isLoading={isLoading} />
                       </div>
                   ) : (
                       <React.Fragment>
@@ -281,8 +279,8 @@ const App: React.FC = () => {
                   {gamePhase !== 'start' && (
                       <div className="hero-container" style={{ 
                         position: 'absolute', 
-                        bottom: '20px', 
-                        right: '20px',
+                        bottom: '5px', 
+                        right: '5px',
                         width: '100px',
                         height: '100px',
                         zIndex: 10

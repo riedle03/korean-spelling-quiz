@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface LevelUpScreenProps {
   level: number;
@@ -14,6 +14,25 @@ const bosses = {
 
 const LevelUpScreen: React.FC<LevelUpScreenProps> = ({ level, onProceed }) => {
   const boss = bosses[level as keyof typeof bosses];
+  const [streamedDescription, setStreamedDescription] = useState('');
+  
+  useEffect(() => {
+    if (boss) {
+      const description = boss.description;
+      setStreamedDescription('');
+      let index = 0;
+      const intervalId = setInterval(() => {
+        if (index < description.length) {
+          setStreamedDescription(prev => prev + description[index]);
+          index++;
+        } else {
+          clearInterval(intervalId);
+        }
+      }, 30);
+      return () => clearInterval(intervalId);
+    }
+  }, [boss]);
+
   if (!boss) return null;
 
   return (
@@ -24,7 +43,7 @@ const LevelUpScreen: React.FC<LevelUpScreenProps> = ({ level, onProceed }) => {
                 <p className="nes-text is-warning" style={{marginBottom: '1rem'}}>LEVEL {level-1} CLEAR!</p>
                 <i className="nes-octocat animate" style={{transform: 'scale(1.5)', marginBottom: '1.5rem'}}></i>
                 <h3 style={{marginBottom: '1rem'}}>{boss.name}</h3>
-                <p style={{marginBottom: '2rem', fontSize: '0.9rem'}}>{boss.description}</p>
+                <p style={{marginBottom: '2rem', fontSize: '0.9rem', minHeight: '54px'}}>{streamedDescription}</p>
                 <menu className="dialog-menu">
                     <button 
                         onClick={onProceed} 
