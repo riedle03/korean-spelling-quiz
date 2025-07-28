@@ -1,0 +1,6 @@
+{
+  "name": "Korean Spelling Quiz",
+  "description": "An interactive web application for high school students to practice and master common Korean spelling and vocabulary mistakes through AI-generated quizzes.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

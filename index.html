@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 맞춤법 퀴즈: 한글 용사</title>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+    <style>
+      @font-face {
+          font-family: 'DungGeunMo';
+          src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+          font-weight: normal;
+          font-style: normal;
+      }
+
+      /* -- Responsive Setup -- */
+      html {
+        font-size: 16px; /* Base font size for rem units */
+      }
+      @media (max-height: 850px) { html { font-size: 14px; } }
+      @media (max-width: 480px) { html { font-size: 12px; } }
+      @media (max-width: 390px) { html { font-size: 11px; } }
+
+
+      html, body, input, textarea, select, button {
+        font-family: 'DungGeunMo', 'Press Start 2P', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+      }
+      body {
+          background-color: #d3d3d3;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 1rem;
+          margin: 0;
+          overflow: hidden;
+      }
+      #root {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+      .game-console {
+          background-color: #F5F5F5;
+          border-radius: 1.25rem 1.25rem 3.75rem 1.25rem;
+          padding: 1.5rem;
+          box-shadow: 
+              inset -0.125rem -0.25rem 0px 0px #c0c0c0,
+              0.3125rem 0.3125rem 0.625rem rgba(0,0,0,0.3);
+          width: 100%;
+          max-width: 450px;
+          height: 95vh;
+          max-height: 800px;
+          display: flex;
+          flex-direction: column;
+          border: 2px solid #4a4a4a;
+          transition: all 0.2s ease-out;
+      }
+      .console-top {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 1.25rem;
+          flex-grow: 1; /* Allow screen to take up space */
+          min-height: 0; /* Fix flexbox overflow issue */
+      }
+      .screen-bezel {
+          background-color: #4a4a4a;
+          padding: 1.25rem;
+          border-radius: 1rem;
+          box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+          width: 100%;
+          display: flex; /* Make bezel a flex container */
+          flex-grow: 1; /* Allow bezel to grow */
+          position: relative; /* For overlay positioning */
+      }
+      .screen {
+          background: #9bbc0f;
+          border-radius: 0.5rem;
+          position: relative;
+          overflow: hidden;
+          color: #0f380f;
+          font-family: 'DungGeunMo', 'Press Start 2P', monospace;
+          display: flex;
+          width: 100%;
+          flex-grow: 1; /* Allow screen to fill bezel */
+      }
+
+      /* NEW: This wrapper contains all screen content and receives the blur filter */
+      .screen-content-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .screen-content-wrapper header {
+        text-align: center;
+        padding: 0.625rem 1rem 0.25rem;
+        flex-shrink: 0;
+        background: #9bbc0f;
+        z-index: 1;
+      }
+      .screen-content-wrapper header h1 {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+      .screen-content-wrapper header p {
+        font-size: 0.8rem;
+        margin: 0.25rem 0;
+      }
+
+      /* NEW: This container handles the scrolling logic */
+      .screen-scroll-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        min-height: 0; /* Crucial for scrolling in flexbox */
+        padding: 0.3125rem;
+      }
+      .screen-scroll-container::-webkit-scrollbar { width: 0.5rem; }
+      .screen-scroll-container::-webkit-scrollbar-track { background: #8bac0f; }
+      .screen-scroll-container::-webkit-scrollbar-thumb { background: #306230; border-radius: 0.25rem; }
+
+      /* MODIFIED: This is now just for content padding inside the scroll container */
+      .screen-content {
+        padding: 0;
+      }
+
+      .screen-content-wrapper footer {
+        text-align: center;
+        font-size: 0.7rem;
+        padding: 0.5rem 1rem;
+        flex-shrink: 0;
+        background: #9bbc0f;
+        z-index: 1;
+      }
+      
+      .console-bottom {
+          flex-shrink: 0; /* Prevent controls from shrinking */
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 0.5rem 1.5rem 1rem 1.5rem;
+          min-height: 9.375rem;
+          gap: 0.5rem;
+      }
+      .controls-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+      }
+      .d-pad { position: relative; width: 6.25rem; height: 6.25rem; flex-shrink: 0; }
+      .d-pad > div { background-color: #333; position: absolute; box-shadow: inset -2px -2px 0px 0px #222; }
+      .d-pad .up, .d-pad .down { width: 2.125rem; height: 6.25rem; left: 2.0625rem; top: 0; border-radius: 0.3125rem; }
+      .d-pad .left, .d-pad .right { width: 6.25rem; height: 2.125rem; left: 0; top: 2.0625rem; border-radius: 0.3125rem; }
+      .d-pad::after {
+        content: '';
+        position: absolute;
+        width: 2.125rem;
+        height: 2.125rem;
+        top: 2.0625rem;
+        left: 2.0625rem;
+        background: #222;
+        border-radius: 50%;
+        box-shadow: inset 2px 2px #333;
+      }
+      .action-buttons { display: flex; gap: 1.25rem; align-items: center; }
+      .action-buttons .button { width: 3.75rem; height: 3.75rem; border-radius: 50%; border: none; color: white; font-family: 'Press Start 2P'; font-size: 1.25rem; display: flex; justify-content: center; align-items: center; padding-top: 0.3125rem; flex-shrink: 0;}
+      .action-buttons .button.a { background-color: #A02040; box-shadow: inset -0.125rem -0.25rem 0px 0px #601020; }
+      .action-buttons .button.b { background-color: #D0A020; box-shadow: inset -0.125rem -0.25rem 0px 0px #806010; }
+      .brand-name { 
+        font-family: 'Press Start 2P'; 
+        color: #A02040; 
+        margin: 0;
+        font-size: 1.5rem;
+        text-align: center;
+      }
+      
+      .hero-container {
+        position: absolute;
+        bottom: 5px;
+        right: 15px;
+        z-index: 5;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+      }
+      .hero-sprite {
+        transition: transform 0.2s ease-in-out;
+        transform-origin: bottom center;
+      }
+      .hero-sprite.happy { animation: hero-jump 0.4s ease-out; }
+      .hero-sprite.sad { animation: hero-shake 0.5s ease-in-out; }
+
+      .hero-sword {
+        position: relative;
+        width: 10px;
+        height: 40px;
+        background: #cad3ca; /* Light grey blade */
+        border: 2px solid #0f380f;
+        border-bottom: none;
+      }
+      .hero-sword::after { /* Hilt */
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 6px;
+        background: #8b4513; /* Brown hilt */
+        border: 2px solid #0f380f;
+        bottom: -4px;
+        left: -8px;
+        border-radius: 2px;
+      }
+
+      @keyframes hero-jump {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+      }
+      @keyframes hero-shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-5px); }
+          40%, 80% { transform: translateX(5px); }
+      }
+      .prose ul > li::before {
+        content: '*' !important;
+        margin-right: 0.5rem;
+        color: #0f380f;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .spinner { animation: spin 1s linear infinite; display: inline-block; }
+
+      /* nes.css overrides for the screen */
+      .screen .nes-container, .screen .nes-balloon, .screen .nes-btn, .screen .nes-progress, .screen .nes-input, .screen .nes-list li::before { border-color: #0f380f !important; color: #0f380f; }
+      .screen .nes-container::after { border-color: #0f380f !important; }
+      .screen .nes-btn { background: transparent; }
+      .screen .nes-btn.is-primary, .screen .nes-btn.is-success { background: #306230; color: #9bbc0f; }
+      .screen .nes-btn.is-error { background: #8b0000; color: #9bbc0f; }
+      .screen .nes-btn:hover { background: #306230; color: #9bbc0f; }
+      .screen .nes-btn.is-primary:hover, .screen .nes-btn.is-success:hover { background: #0f380f; }
+      .screen .nes-text.is-primary, .screen .nes-text.is-success { color: #306230 !important; }
+      .screen .nes-text.is-error { color: #8b0000 !important; }
+      .screen .nes-text.is-warning { color: #e76e55 !important; }
+      .screen progress.nes-progress.is-warning::-webkit-progress-value { background-color: #f7d51d; }
+      .screen progress.nes-progress.is-warning::-moz-progress-bar { background-color: #f7d51d; }
+      .screen .nes-progress { background: #8bac0f; }
+      .screen .nes-container.is-dark { background-color: #8bac0f; }
+      .screen .nes-container.is-dark .title { color: #0f380f; background-color: #9bbc0f; }
+      .screen .nes-icon.is-transparent { color: #306230 !important; }
+      .screen .nes-dialog { background-color: #9bbc0f !important; border-color: #0f380f !important; color: #0f380f !important; }
+      .screen .nes-dialog::after { border-color: #0f380f !important; }
+      .screen .nes-dialog p.title { background-color: #9bbc0f !important; color: #0f380f !important; }
+
+      /* -- Fullscreen on small devices -- */
+      @media (max-width: 480px) {
+        body {
+            padding: 0;
+        }
+        .game-console {
+            max-height: 100vh;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+        }
+        .console-bottom {
+            padding: 1.25rem 1rem 1rem 1rem;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react-markdown": "https://esm.sh/react-markdown@9",
+    "remark-gfm": "https://esm.sh/remark-gfm@4"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
