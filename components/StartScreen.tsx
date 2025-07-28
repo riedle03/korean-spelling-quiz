@@ -11,8 +11,8 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, isLoading = false })
   const [streamedIntro2, setStreamedIntro2] = useState('');
   const [isPart1Done, setIsPart1Done] = useState(false);
 
-  const introText1 = "고대 한글 왕국에 재앙이 닥쳤습니다.\n사악한 '알파벳 마왕'이 나타나, 우리의 소중한 '한글 공주'를 납치했습니다!";
-  const introText2 = "마왕의 성으로 가는 길은 강력한 맞춤법 몬스터들이 지키고 있습니다.\n\n왕국의 마지막 희망, 용사여! 당신의 이름을 알려주세요!";
+  const introText1 = "따분한 국어 시간, 꾸벅꾸벅 졸던 평범한 고등학생인 당신...\n\n눈을 떠보니 이곳은 '한글 왕국'?! 정신을 차릴 새도 없이, 왕국의 신하가 다급하게 외칩니다.";
+  const introText2 = "\"고대 한글 왕국에 재앙이 닥쳤습니다. 사악한 '알파벳 마왕'이 나타나, 우리의 소중한 '한글 공주'를 납치했습니다!\n\n마왕의 성으로 가는 길은 강력한 맞춤법 몬스터들이 지키고 있습니다.\n\n왕국의 마지막 희망, 용사여! 당신의 이름을 알려주세요!\"";
 
   useEffect(() => {
     setStreamedIntro1('');
@@ -60,7 +60,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, isLoading = false })
 
   return (
     <div className="nes-container with-title is-centered">
-      <p className="title">한글 용사: 고대 왕국의 부름</p>
+      <p className="title">게임 속 맞춤법 용사로 살아남기</p>
       
       <div style={{ marginBottom: '1.5rem', fontSize: '0.9rem', textAlign: 'left', padding: '0 1rem', minHeight: '350px' }}>
         <p style={{ whiteSpace: 'pre-line' }} className="nes-text is-primary">{streamedIntro1 || ''}</p>

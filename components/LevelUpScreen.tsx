@@ -44,7 +44,16 @@ const LevelUpScreen: React.FC<LevelUpScreenProps> = ({ level, onProceed }) => {
             <form method="dialog" style={{textAlign: 'center'}}>
                 <p className="title">{level === 5 ? "최종 보스 등장!" : "중간 보스 등장!"}</p>
                 <p className="nes-text is-warning" style={{marginBottom: '1rem'}}>LEVEL {(level - 1) || 1} CLEAR!</p>
-                <i className="nes-octocat animate" style={{transform: 'scale(1.5)', marginBottom: '1.5rem'}}></i>
+                <img 
+                  src="/devilking2.png" 
+                  alt="알파벳 마왕" 
+                  style={{
+                    imageRendering: 'pixelated',
+                    maxWidth: '120px',
+                    maxHeight: '120px', 
+                    marginBottom: '1.5rem'
+                  }} 
+                />
                 <h3 style={{marginBottom: '1rem'}}>{boss.name || ''}</h3>
                 <p style={{marginBottom: '2rem', fontSize: '0.9rem', minHeight: '54px'}}>{streamedDescription || ''}</p>
                 <menu className="dialog-menu">
